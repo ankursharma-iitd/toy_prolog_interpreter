@@ -1,0 +1,2 @@
+?- atom(X,Y).
+?- ankur(Y,Z).

@@ -1,0 +1,276 @@
+   0  $accept : %entry% $end
+
+   1  query : NEWLINE query
+   2        | atomic_formula_list DOT NEWLINE
+
+   3  program :
+   4          | program NEWLINE
+   5          | program clause
+
+   6  clause : atomic_formula DOT
+   7         | atomic_formula IF atomic_formula_list DOT
+
+   8  atomic_formula_list : atomic_formula
+   9                      | atomic_formula COMMA atomic_formula_list
+
+  10  atomic_formula : CONST LPAREN term_list RPAREN
+
+  11  term_list : term
+  12            | term COMMA term_list
+
+  13  term : VAR
+  14       | CONST
+  15       | atomic_formula
+
+  16  %entry% : '\001' program
+  17          | '\002' query
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	'\002'  shift 2
+	.  error
+
+	%entry%  goto 3
+
+
+state 1
+	%entry% : '\001' . program  (16)
+	program : .  (3)
+
+	.  reduce 3
+
+	program  goto 4
+
+
+state 2
+	%entry% : '\002' . query  (17)
+
+	CONST  shift 5
+	NEWLINE  shift 6
+	.  error
+
+	query  goto 7
+	atomic_formula_list  goto 8
+	atomic_formula  goto 9
+
+
+state 3
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 4
+	program : program . NEWLINE  (4)
+	program : program . clause  (5)
+	%entry% : '\001' program .  (16)
+
+	CONST  shift 5
+	NEWLINE  shift 10
+	$end  reduce 16
+
+	clause  goto 11
+	atomic_formula  goto 12
+
+
+state 5
+	atomic_formula : CONST . LPAREN term_list RPAREN  (10)
+
+	LPAREN  shift 13
+	.  error
+
+
+state 6
+	query : NEWLINE . query  (1)
+
+	CONST  shift 5
+	NEWLINE  shift 6
+	.  error
+
+	query  goto 14
+	atomic_formula_list  goto 8
+	atomic_formula  goto 9
+
+
+state 7
+	%entry% : '\002' query .  (17)
+
+	.  reduce 17
+
+
+state 8
+	query : atomic_formula_list . DOT NEWLINE  (2)
+
+	DOT  shift 15
+	.  error
+
+
+state 9
+	atomic_formula_list : atomic_formula .  (8)
+	atomic_formula_list : atomic_formula . COMMA atomic_formula_list  (9)
+
+	COMMA  shift 16
+	DOT  reduce 8
+
+
+state 10
+	program : program NEWLINE .  (4)
+
+	.  reduce 4
+
+
+state 11
+	program : program clause .  (5)
+
+	.  reduce 5
+
+
+state 12
+	clause : atomic_formula . DOT  (6)
+	clause : atomic_formula . IF atomic_formula_list DOT  (7)
+
+	IF  shift 17
+	DOT  shift 18
+	.  error
+
+
+state 13
+	atomic_formula : CONST LPAREN . term_list RPAREN  (10)
+
+	CONST  shift 19
+	VAR  shift 20
+	.  error
+
+	atomic_formula  goto 21
+	term_list  goto 22
+	term  goto 23
+
+
+state 14
+	query : NEWLINE query .  (1)
+
+	.  reduce 1
+
+
+state 15
+	query : atomic_formula_list DOT . NEWLINE  (2)
+
+	NEWLINE  shift 24
+	.  error
+
+
+state 16
+	atomic_formula_list : atomic_formula COMMA . atomic_formula_list  (9)
+
+	CONST  shift 5
+	.  error
+
+	atomic_formula_list  goto 25
+	atomic_formula  goto 9
+
+
+state 17
+	clause : atomic_formula IF . atomic_formula_list DOT  (7)
+
+	CONST  shift 5
+	.  error
+
+	atomic_formula_list  goto 26
+	atomic_formula  goto 9
+
+
+state 18
+	clause : atomic_formula DOT .  (6)
+
+	.  reduce 6
+
+
+state 19
+	atomic_formula : CONST . LPAREN term_list RPAREN  (10)
+	term : CONST .  (14)
+
+	LPAREN  shift 13
+	RPAREN  reduce 14
+	COMMA  reduce 14
+
+
+state 20
+	term : VAR .  (13)
+
+	.  reduce 13
+
+
+state 21
+	term : atomic_formula .  (15)
+
+	.  reduce 15
+
+
+state 22
+	atomic_formula : CONST LPAREN term_list . RPAREN  (10)
+
+	RPAREN  shift 27
+	.  error
+
+
+state 23
+	term_list : term .  (11)
+	term_list : term . COMMA term_list  (12)
+
+	COMMA  shift 28
+	RPAREN  reduce 11
+
+
+state 24
+	query : atomic_formula_list DOT NEWLINE .  (2)
+
+	.  reduce 2
+
+
+state 25
+	atomic_formula_list : atomic_formula COMMA atomic_formula_list .  (9)
+
+	.  reduce 9
+
+
+state 26
+	clause : atomic_formula IF atomic_formula_list . DOT  (7)
+
+	DOT  shift 29
+	.  error
+
+
+state 27
+	atomic_formula : CONST LPAREN term_list RPAREN .  (10)
+
+	.  reduce 10
+
+
+state 28
+	term_list : term COMMA . term_list  (12)
+
+	CONST  shift 19
+	VAR  shift 20
+	.  error
+
+	atomic_formula  goto 21
+	term_list  goto 30
+	term  goto 23
+
+
+state 29
+	clause : atomic_formula IF atomic_formula_list DOT .  (7)
+
+	.  reduce 7
+
+
+state 30
+	term_list : term COMMA term_list .  (12)
+
+	.  reduce 12
+
+
+21 terminals, 9 nonterminals
+18 grammar rules, 31 states
